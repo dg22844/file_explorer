@@ -1,16 +1,20 @@
 package com.example.file_explorer.Fragments;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -36,7 +40,9 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -165,6 +171,43 @@ public class InternalFragment extends Fragment implements OnFileSelectedListener
         CustomAdapter customAdapter = new CustomAdapter();
         options.setAdapter(customAdapter);
         optionDialog.show();
+
+        options.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedItem = adapterView.getItemAtPosition(i).toString();
+
+                switch (selectedItem){
+                    case "Details":
+                        AlertDialog.Builder detailDialog = new AlertDialog.Builder(getContext());
+                        detailDialog.setTitle("Details:");
+                        final TextView details = new TextView(getContext());
+                        detailDialog.setView(details);
+                        Date lastModified = new Date(file.lastModified());
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm:ss");
+                        String formattedDate = formatter.format(lastModified);
+
+                        details.setText("File Name: " + file.getName() + "\n" +
+                                "Size: " + Formatter.formatShortFileSize(getContext(), file.length()) + "\n"
+                                + "Path: " + file.getAbsolutePath() + "\n"
+                               + "Last Modified: " + formattedDate);
+
+                        detailDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                optionDialog.cancel();
+                            }
+                        });
+
+                        AlertDialog alertdialog_details = detailDialog.create();
+                        alertdialog_details.show();
+                        break;
+                }
+
+            }
+
+
+        });
 
     }
 
