@@ -7,12 +7,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.app.Notification;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.file_explorer.Fragments.CardFragment;
 import com.example.file_explorer.Fragments.HomeFragment;
 import com.example.file_explorer.Fragments.InternalFragment;
 import com.google.android.material.navigation.NavigationView;

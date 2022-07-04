@@ -85,7 +85,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
         holder.container.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                listener.onFileLongClicked(file.get(position));
+                listener.onFileLongClicked(file.get(position), position);
                 return false;
             }
         });
