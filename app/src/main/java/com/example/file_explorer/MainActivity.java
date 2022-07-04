@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.file_explorer.Fragments.CardFragment;
 import com.example.file_explorer.Fragments.HomeFragment;
 import com.example.file_explorer.Fragments.InternalFragment;
 import com.google.android.material.navigation.NavigationView;
