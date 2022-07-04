@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,113 +36,39 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import org.w3c.dom.EntityReference;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements OnFileSelectedListener {
+public class CatagorizedFragment extends Fragment implements OnFileSelectedListener {
 
     private RecyclerView recyclerView;
     private FileAdapter fileAdapter;
     private List<File> fileList;
-    private LinearLayout linearImage, linearVideo, linearDocs, linearDownloads, linearApks, linearMusic;
 
     File storage;
     String data;
     String[] items = {"Details", "Rename", "Delete", "Share"};
+    File path;
 
     View view;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstnceState) {
-        view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_categorized, container, false);
 
-
-        linearImage = view.findViewById(R.id.linearImage);
-        linearVideo = view.findViewById(R.id.linearVideo);
-        linearMusic = view.findViewById(R.id.linearMusic);
-        linearDocs = view.findViewById(R.id.linearDocs);
-        linearDownloads = view.findViewById(R.id.linearDownloads);
-        linearApks = view.findViewById(R.id.linearApks);
-
-        linearImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","image");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-        linearVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","video");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-        linearMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","music");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-        linearDocs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","docs");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-        linearDownloads.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","downloads");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-        linearApks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle args = new Bundle();
-                args.putString("fileType","apk");
-                CatagorizedFragment categorizedFragment = new CatagorizedFragment();
-                categorizedFragment.setArguments(args);
-
-                getFragmentManager().beginTransaction().add(R.id.fragment_container,categorizedFragment).addToBackStack(null).commit();
-
-            }
-        });
-
+        Bundle bundle = this.getArguments();
+        if(bundle.getString("fileType").equals("downloads")){
+            path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        } else {
+            path = Environment.getExternalStorageDirectory();
+        }
 
         runtimePermission();
         return view;
@@ -173,30 +98,64 @@ public class HomeFragment extends Fragment implements OnFileSelectedListener {
         for (File singleFile : files){
             if(singleFile.isDirectory() && !singleFile.isHidden()) {
                 arrayList.addAll(findFiles(singleFile));
-            } else if (singleFile.getName().toLowerCase().endsWith(".jpeg")
-                    || singleFile.getName().toLowerCase().endsWith(".jpg")
-                    || singleFile.getName().toLowerCase().endsWith(".png")
-                    || singleFile.getName().toLowerCase().endsWith(".mp3")
-                    || singleFile.getName().toLowerCase().endsWith(".wav")
-                    || singleFile.getName().toLowerCase().endsWith(".mp4")
-                    || singleFile.getName().toLowerCase().endsWith(".doc")
-                    || singleFile.getName().toLowerCase().endsWith(".pdf")
-                    || singleFile.getName().toLowerCase().endsWith(".apk")) {
-                arrayList.add(singleFile);
+            } else {
+                switch (getArguments().getString("fileType")){
+                    case "image":
+                        if(singleFile.getName().toLowerCase().endsWith(".jpeg")
+                                || singleFile.getName().toLowerCase().endsWith(".jpg")
+                                || singleFile.getName().toLowerCase().endsWith(".png")) {
+                            arrayList.add(singleFile);
+                        }
+                        break;
+                    case "video":
+                        if(singleFile.getName().toLowerCase().endsWith(".mp4")) {
+                            arrayList.add(singleFile);
+                        }
+                        break;
+                    case "music":
+                        if(singleFile.getName().toLowerCase().endsWith(".mp3")
+                                || singleFile.getName().toLowerCase().endsWith(".wav")) {
+                            arrayList.add(singleFile);
+                        }
+                        break;
+                    case "docs":
+                        if(singleFile.getName().toLowerCase().endsWith(".doc")
+                                || singleFile.getName().toLowerCase().endsWith(".pdf")) {
+                            arrayList.add(singleFile);
+                        }
+                        break;
+                    case "apk":
+                        if(singleFile.getName().toLowerCase().endsWith(".apk")) {
+                            arrayList.add(singleFile);
+                        }
+                        break;
+                    case "downloads":
+                        if(singleFile.getName().toLowerCase().endsWith(".jpeg")
+                                || singleFile.getName().toLowerCase().endsWith(".jpg")
+                                || singleFile.getName().toLowerCase().endsWith(".png")
+                                || singleFile.getName().toLowerCase().endsWith(".mp3")
+                                || singleFile.getName().toLowerCase().endsWith(".wav")
+                                || singleFile.getName().toLowerCase().endsWith(".mp4")
+                                || singleFile.getName().toLowerCase().endsWith(".doc")
+                                || singleFile.getName().toLowerCase().endsWith(".pdf")
+                                || singleFile.getName().toLowerCase().endsWith(".apk")){
+                            arrayList.add(singleFile);
+                        }
+                        break;
 
+                }
             }
         }
-        arrayList.sort(Comparator.comparing(File::lastModified).reversed());
         return arrayList;
     }
 
     private void displayFiles() {
 
-        recyclerView = view.findViewById(R.id.recycler_recents);
+        recyclerView = view.findViewById(R.id.recycler_internal);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         fileList = new ArrayList<>();
-        fileList.addAll(findFiles(Environment.getExternalStorageDirectory()));
+        fileList.addAll(findFiles(path));
         fileAdapter = new FileAdapter(getContext(), fileList, this);
         recyclerView.setAdapter(fileAdapter);
 
@@ -208,7 +167,7 @@ public class HomeFragment extends Fragment implements OnFileSelectedListener {
         if (file.isDirectory()) {
             Bundle bundle = new Bundle();
             bundle.putString("path",file.getAbsolutePath());
-            InternalFragment internalFragment = new InternalFragment();
+            CatagorizedFragment internalFragment = new CatagorizedFragment();
             internalFragment.setArguments(bundle);
             getFragmentManager().beginTransaction().replace(R.id.fragment_container, internalFragment)
                     .addToBackStack(null).commit();
@@ -251,7 +210,7 @@ public class HomeFragment extends Fragment implements OnFileSelectedListener {
                         details.setText("File Name: " + file.getName() + "\n" +
                                 "Size: " + Formatter.formatShortFileSize(getContext(), file.length()) + "\n"
                                 + "Path: " + file.getAbsolutePath() + "\n"
-                                + "Last Modified: " + formattedDate);
+                               + "Last Modified: " + formattedDate);
 
                         detailDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -371,4 +330,3 @@ public class HomeFragment extends Fragment implements OnFileSelectedListener {
         }
     }
 }
-
